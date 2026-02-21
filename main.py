@@ -3,23 +3,23 @@ import google.generativeai as genai
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
 
-# قراءة المفاتيح من Railway
+# قراءة المفاتيح
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 GEMINI_KEY = os.getenv("GEMINI_API_KEY")
 
 # إعداد Gemini
 genai.configure(api_key=GEMINI_KEY)
-model = genai.GenerativeModel("models/gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-1.5-flash")
 
-# التعامل مع أي رسالة
+# الرد على الرسائل
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_message = update.message.text
-
-    response = model.generate_content(
-        f"اشرح بطريقة تعليمية واضحة ومبسطة للطلاب العراقيين:\n{user_message}"
-    )
-
-    await update.message.reply_text(response.text)
+    
+    try:
+        response = model.generate_content(user_message)
+        await update.message.reply_text(response.text)
+    except Exception as e:
+        await update.message.reply_text("حدث خطأ، حاول مرة أخرى.")
 
 # تشغيل البوت
 app = ApplicationBuilder().token(TOKEN).build()
