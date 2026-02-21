@@ -3,26 +3,26 @@ import google.generativeai as genai
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
 
-# قراءة المفاتيح
+# قراءة المفاتيح من Railway
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 GEMINI_KEY = os.getenv("GEMINI_API_KEY")
 
 # إعداد Gemini
 genai.configure(api_key=GEMINI_KEY)
-model = genai.GenerativeModel("gemini-pro")
+model = genai.GenerativeModel("gemini-1.5-flash")
 
-# الرد على أي رسالة
+# التعامل مع أي رسالة
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_message = update.message.text
-    
+
     response = model.generate_content(
         f"اشرح بطريقة تعليمية واضحة ومبسطة للطلاب العراقيين:\n{user_message}"
     )
-    
+
     await update.message.reply_text(response.text)
 
+# تشغيل البوت
 app = ApplicationBuilder().token(TOKEN).build()
-
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
 print("Bot is running...")
