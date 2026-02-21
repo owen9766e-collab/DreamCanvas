@@ -1,15 +1,29 @@
 import os
+import google.generativeai as genai
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
 
+# قراءة المفاتيح
 TOKEN = os.getenv("TELEGRAM_TOKEN")
+GEMINI_KEY = os.getenv("GEMINI_API_KEY")
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("🚀 EduIQ Iraq Bot is starting...")
+# إعداد Gemini
+genai.configure(api_key=GEMINI_KEY)
+model = genai.GenerativeModel("gemini-pro")
+
+# الرد على أي رسالة
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_message = update.message.text
+    
+    response = model.generate_content(
+        f"اشرح بطريقة تعليمية واضحة ومبسطة للطلاب العراقيين:\n{user_message}"
+    )
+    
+    await update.message.reply_text(response.text)
 
 app = ApplicationBuilder().token(TOKEN).build()
-app.add_handler(CommandHandler("start", start))
 
-if __name__ == "__main__":
-    print("Bot is running...")
-    app.run_polling()
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+
+print("Bot is running...")
+app.run_polling()
