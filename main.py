@@ -9,17 +9,17 @@ GEMINI_KEY = os.getenv("GEMINI_API_KEY")
 
 # إعداد Gemini
 genai.configure(api_key=GEMINI_KEY)
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-2.5-pro")
 
 # الرد على الرسائل
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_message = update.message.text
-    
+
     try:
         response = model.generate_content(user_message)
         await update.message.reply_text(response.text)
     except Exception as e:
-        await update.message.reply_text("حدث خطأ، حاول مرة أخرى.")
+        await update.message.reply_text(str(e))  # نعرض الخطأ الحقيقي مؤقتاً
 
 # تشغيل البوت
 app = ApplicationBuilder().token(TOKEN).build()
