@@ -9,7 +9,7 @@ GEMINI_KEY = os.getenv("GEMINI_API_KEY")
 
 # إعداد Gemini
 genai.configure(api_key=GEMINI_KEY)
-model = genai.GenerativeModel("gemini-1.5-flash-latest")
+model = genai.GenerativeModel("models/gemini-1.5-flash")
 
 # التعامل مع أي رسالة
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
